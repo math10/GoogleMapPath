@@ -18,7 +18,7 @@ export class MapPage {
 
   @ViewChild('mapCanvas') mapElement: ElementRef;
   myLocation: any = null;
-  y: any = null;
+  destination: any = null;
   mapData: any = [{
     "name": "Ionic HQ",
     "lat": 43.074395,
@@ -77,7 +77,7 @@ export class MapPage {
         // Instantiate an info window to hold step text.
         var stepDisplay = new google.maps.InfoWindow;
 
-        this.y = location;
+        this.destination = location; // update destination
 
         // Display the route between the initial start and end selections.
         this.calculateAndDisplayRoute(
@@ -110,7 +110,7 @@ export class MapPage {
     // WALKING directions.
     directionsService.route({
       origin: this.myLocation,
-      destination: this.y,
+      destination: this.destination,
       travelMode: 'WALKING'
     }, function (response, status) {
       // Route the directions and pass the response to a function to create
