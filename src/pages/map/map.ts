@@ -17,7 +17,7 @@ declare var google: any;
 export class MapPage {
 
   @ViewChild('mapCanvas') mapElement: ElementRef;
-  x: any = null;
+  myLocation: any = null;
   y: any = null;
   mapData: any = [{
     "name": "Ionic HQ",
@@ -27,14 +27,19 @@ export class MapPage {
     "name": "Afterparty - Brocach Irish Pub",
     "lat": 43.07336,
     "lng": -89.38335
+  },
+  {
+    "name": "Monona Terrace Convention Center",
+    "lat": 43.071584,
+    "lng": -89.380120,
+    "center": true
   }];
   constructor(public platform: Platform) {}
 
   ionViewDidLoad() {
     var scope = this;
     setTimeout(function() {
-      scope.x = scope.mapData[0];
-      scope.y = scope.mapData[1];
+      scope.myLocation = scope.mapData[0];
       scope.initMap();
     }, 2000);
   }
@@ -51,17 +56,36 @@ export class MapPage {
       center: this.mapData.find((d: any) => d.center)
     });
 
-    // Create a renderer for directions and bind it to the map.
-    var directionsDisplay = new google.maps.DirectionsRenderer({
-      map: map
-    });
+    var directionsDisplay = null;
 
-    // Instantiate an info window to hold step text.
-    var stepDisplay = new google.maps.InfoWindow;
+    this.mapData.forEach(location => {
+      let marker = new google.maps.Marker({
+        icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+        title: location.name,
+        position: new google.maps.LatLng(location.lat, location.lng),
+        animation: google.maps.Animation.DROP,
+        map: map
+      });
 
-    // Display the route between the initial start and end selections.
-    this.calculateAndDisplayRoute(
-      directionsDisplay, directionsService, markerArray, stepDisplay, map);
+      marker.addListener('click', () => {
+        // Create a renderer for directions and bind it to the map.
+        if(directionsDisplay !== null) directionsDisplay.setMap(null);
+        directionsDisplay = new google.maps.DirectionsRenderer({
+          map: map
+        });
+
+        // Instantiate an info window to hold step text.
+        var stepDisplay = new google.maps.InfoWindow;
+
+        this.y = location;
+
+        // Display the route between the initial start and end selections.
+        this.calculateAndDisplayRoute(
+          directionsDisplay, directionsService, markerArray, stepDisplay, map);
+        });
+      });
+
+
     // Listen to change events from the start and end lists.
     // var onChangeHandler = function () {
     //   calculateAndDisplayRoute(
@@ -85,7 +109,7 @@ export class MapPage {
     // Retrieve the start and end locations and create a DirectionsRequest using
     // WALKING directions.
     directionsService.route({
-      origin: this.x,
+      origin: this.myLocation,
       destination: this.y,
       travelMode: 'WALKING'
     }, function (response, status) {
