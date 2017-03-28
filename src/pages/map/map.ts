@@ -39,7 +39,7 @@ export class MapPage {
   ionViewDidLoad() {
     var scope = this;
     setTimeout(function() {
-      scope.myLocation = scope.mapData[0];
+      scope.myLocation = scope.mapData[0]; // myLocation is fixed
       scope.initMap();
     }, 2000);
   }
@@ -58,7 +58,7 @@ export class MapPage {
 
     var directionsDisplay = null;
 
-    this.mapData.forEach(location => {
+    this.mapData.forEach(location => { // destination choice
       let marker = new google.maps.Marker({
         icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
         title: location.name,
@@ -67,7 +67,7 @@ export class MapPage {
         map: map
       });
 
-      marker.addListener('click', () => {
+      marker.addListener('click', () => { // destination selected
         // Create a renderer for directions and bind it to the map.
         if(directionsDisplay !== null) directionsDisplay.setMap(null);
         directionsDisplay = new google.maps.DirectionsRenderer({
